@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
 </head>
 <body>
-  <h1>Login</h1>
+  <h1>Enter you login details</h1>
   <form id="login-form">
     <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
@@ -30,6 +30,16 @@
     const app = firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
+    // Mapping user emails to specific links
+    const userLinks = {
+      "christellelattouf@gmail.com": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=1832300743&single=true",
+      "christellelattouf@new-heights.me": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
+      "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=1140990007&single=true",
+    };
+
+    // Default redirect if the email is not in the list
+    const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home";
+
     // Handle login form submission
     document.getElementById("login-form").addEventListener("submit", function (e) {
       e.preventDefault();
@@ -38,11 +48,18 @@
 
       auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          // Successful login, redirect to your Google Site
-          window.location.href = "https://your-google-site-url";
+          // Successful login
+          const userEmail = userCredential.user.email;
+
+          // Redirect based on user email
+          if (userLinks[userEmail]) {
+            window.location.href = userLinks[userEmail];
+          } else {
+            window.location.href = defaultRedirect; // Default page
+          }
         })
         .catch((error) => {
-          alert(error.message);
+          alert(error.message); // Show error message if login fails
         });
     });
   </script>
