@@ -4,16 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Login</title>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
-</head>
-<body>
-  <h1>Login</h1>
+  <!-- Import Firebase SDK -->
+  <script type="module">
+    // Firebase v9+ Modular Imports
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-  <!-- Login with Google -->
-  <button id="google-login">Login with Google</button>
-
-  <script>
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAZCQZXewXw9XPU-iq_sKhRvP4BNqi7k4w",
@@ -25,14 +21,14 @@
     };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
     // Handle Google Login
     document.getElementById("google-login").addEventListener("click", function () {
-      const provider = new firebase.auth.GoogleAuthProvider();
+      const provider = new GoogleAuthProvider();
 
-      auth.signInWithPopup(provider)
+      signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
           alert("User logged in successfully with Google!");
@@ -50,9 +46,15 @@
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
-          alert(error.message);
+          alert("Error during Google login: " + error.message);
         });
     });
   </script>
+</head>
+<body>
+  <h1>Login form</h1>
+
+  <!-- Login with Google -->
+  <button id="google-login">Login with Google</button>
 </body>
 </html>
