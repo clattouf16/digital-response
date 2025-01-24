@@ -8,7 +8,7 @@
   <script type="module">
     // Firebase v9+ Modular Imports
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
     // Firebase configuration
     const firebaseConfig = {
@@ -23,13 +23,12 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-    // Automatically log in with Google
-    window.onload = function () {
-      const provider = new GoogleAuthProvider();
-
-      signInWithPopup(auth, provider)
-        .then((result) => {
+    // Handle redirect result after login
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
           const user = result.user;
           console.log("Google User signed in:", user);
 
@@ -38,18 +37,21 @@
             "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
             "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
           };
-          
+
           const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
           // Redirect to the target URL
           window.location.href = redirectLink;
-        })
-        .catch((error) => {
-          console.error("Error during Google login:", error.message);
-          alert("Error during Google login: " + error.message);
-        });
-    };
+        } else {
+          // If no user is logged in yet, initiate login
+          signInWithRedirect(auth, provider);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during Google login:", error.message);
+        alert("Error during Google login: " + error.message);
+      });
   </script>
 </head>
 <body>
