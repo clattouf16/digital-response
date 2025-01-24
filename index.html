@@ -4,10 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Login</title>
-  <!-- Import Firebase SDK -->
+  <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
+    import { 
+      getAuth, 
+      signInWithRedirect, 
+      getRedirectResult, 
+      GoogleAuthProvider, 
+      onAuthStateChanged 
+    } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
 
     // Firebase configuration
     const firebaseConfig = {
@@ -24,13 +30,14 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Check for redirect result
-    getRedirectResult(auth)
-      .then((result) => {
+    // Handle login and redirection
+    async function handleRedirect() {
+      try {
+        const result = await getRedirectResult(auth);
         if (result) {
-          // User logged in via redirect
+          // User is logged in via redirect
           const user = result.user;
-          console.log("Google User signed in:", user);
+          console.log("User logged in:", user);
 
           // Redirect based on user email
           const userLinks = {
@@ -44,22 +51,35 @@
           // Redirect to the appropriate page
           window.location.href = redirectLink;
         }
-      })
-      .catch((error) => {
-        console.error("Error during Google login:", error.message);
-        alert("Error during Google login: " + error.message);
-      });
+      } catch (error) {
+        console.error("Error during redirect result handling:", error.message);
+      }
+    }
 
-    // Automatically login if user is not already authenticated
+    // Automatically sign in or handle redirect
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        // No user signed in, initiate login
-        console.log("No user signed in. Redirecting to Google login...");
-        signInWithRedirect(auth, provider);
+      if (user) {
+        console.log("User already signed in:", user);
+
+        // Redirect based on user email
+        const userLinks = {
+          "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
+          "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
+        };
+
+        const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
+        const redirectLink = userLinks[user.email] || defaultRedirect;
+
+        // Redirect to the appropriate page
+        window.location.href = redirectLink;
       } else {
-        console.log("User is already signed in:", user);
+        console.log("No user signed in. Initiating login...");
+        signInWithRedirect(auth, provider); // Redirect to Google login
       }
     });
+
+    // Handle redirect result on page load
+    handleRedirect();
   </script>
 </head>
 <body>
