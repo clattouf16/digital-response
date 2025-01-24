@@ -44,7 +44,7 @@
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
           // Redirect in the same window using window.location.href
-          window.location.href = redirectLink;
+          window.location.href = redirectLink;  // Avoid window.close()
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
