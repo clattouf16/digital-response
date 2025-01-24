@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Login</title>
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
     import { 
@@ -30,33 +29,41 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Handle login and redirection
-    async function handleRedirect() {
+    // Track if redirect handling is complete
+    let isRedirectHandled = false;
+
+    async function handleLogin() {
       try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          // User is logged in via redirect
-          const user = result.user;
-          console.log("User logged in:", user);
+        // Handle the redirect result (only once)
+        if (!isRedirectHandled) {
+          isRedirectHandled = true; // Prevent multiple calls
+          const result = await getRedirectResult(auth);
+          if (result) {
+            const user = result.user;
+            console.log("User logged in via redirect:", user);
 
-          // Redirect based on user email
-          const userLinks = {
-            "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
-            "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
-          };
+            // Redirect based on user email
+            const userLinks = {
+              "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
+              "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
+            };
 
-          const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
-          const redirectLink = userLinks[user.email] || defaultRedirect;
+            const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
+            const redirectLink = userLinks[user.email] || defaultRedirect;
 
-          // Redirect to the appropriate page
-          window.location.href = redirectLink;
+            // Redirect user to the target page
+            window.location.href = redirectLink;
+          } else {
+            console.log("No redirect result found. Initiating login...");
+            signInWithRedirect(auth, provider);
+          }
         }
       } catch (error) {
-        console.error("Error during redirect result handling:", error.message);
+        console.error("Error during login:", error.message);
       }
     }
 
-    // Automatically sign in or handle redirect
+    // Monitor the user's authentication state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User already signed in:", user);
@@ -70,16 +77,13 @@
         const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
         const redirectLink = userLinks[user.email] || defaultRedirect;
 
-        // Redirect to the appropriate page
+        // Redirect user to the target page
         window.location.href = redirectLink;
       } else {
-        console.log("No user signed in. Initiating login...");
-        signInWithRedirect(auth, provider); // Redirect to Google login
+        console.log("No user signed in. Checking for redirect...");
+        handleLogin(); // Attempt to handle login
       }
     });
-
-    // Handle redirect result on page load
-    handleRedirect();
   </script>
 </head>
 <body>
