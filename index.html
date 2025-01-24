@@ -4,14 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Login</title>
+  <!-- Import Firebase SDK -->
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { 
-      getAuth, 
-      signInWithPopup, 
-      GoogleAuthProvider, 
-      onAuthStateChanged 
-    } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZCQZXewXw9XPU-iq_sKhRvP4BNqi7k4w",
@@ -22,48 +18,37 @@
       appId: "1:331087943210:web:e3a3b18c99af932f6e1553"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    // Wait for Firebase Initialization
+    window.onload = () => {
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
 
-    // Handle user redirection
-    function redirectUser(user) {
-      const userLinks = {
-        "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
-        "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
-      };
+      // Start Google Sign-in automatically
+      const provider = new GoogleAuthProvider();
 
-      const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
-      const redirectLink = userLinks[user.email] || defaultRedirect;
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          console.log("Google User signed in:", user);
 
-      window.location.href = redirectLink;
-    }
+          const userLinks = {
+            "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
+            "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
+          };
+          
+          const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
+          const redirectLink = userLinks[user.email] || defaultRedirect;
 
-    // Main login logic
-    async function handleLogin() {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        console.log("User signed in:", user);
-        redirectUser(user);
-      } catch (error) {
-        console.error("Login failed:", error.message);
-      }
-    }
-
-    // Check for existing auth state
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("User already signed in:", user);
-        redirectUser(user);
-      } else {
-        console.log("No user signed in. Initiating login...");
-        handleLogin();
-      }
-    });
+          window.location.href = redirectLink;
+        })
+        .catch((error) => {
+          console.error("Error during Google login:", error.message);
+          alert("Error during Google login: " + error.message);
+        });
+    };
   </script>
 </head>
 <body>
-  <h1>Logging you in...</h1>
+  <h1>Redirecting to Login...</h1>
 </body>
 </html>
