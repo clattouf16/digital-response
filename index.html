@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,11 +39,13 @@
             "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
             "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
           };
+
           const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
-          // Open the link in a new tab
+          // Open the redirect link in a new tab
           window.open(redirectLink, "_blank");
+
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
