@@ -1,7 +1,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login with Google</title>
+  <title>Google Login</title>
   <!-- Import Firebase SDK -->
   <script type="module">
     // Firebase v9+ Modular Imports
@@ -32,15 +32,19 @@
           alert("User logged in successfully with Google!");
           console.log("Google User signed in:", user);
 
-          // Redirect based on user email to hidden Google Sites page
+          // Redirect based on user email
           const userLinks = {
-            "christellelattouf@new-heights.me": "/nh-drm/rania-details",  // Adjust as needed
-            "christelle.lattouf@gmomail.org": "/nh-drm/home"  // Adjust as needed
+            "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
+            "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
           };
-          const defaultRedirect = "/nh-drm/home";  // Default redirect if user email doesn't match
+          const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
-          window.location.href = redirectLink;
+            window.location.href = redirectLink;
+         // window.open(redirectLink, "_blank");
+         // window.location.replace(redirectLink);
+
+          
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
@@ -55,3 +59,4 @@
   <!-- Login with Google -->
   <button id="google-login">Login with Google</button>
 </body>
+</html>
