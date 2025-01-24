@@ -24,14 +24,13 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Handle Google Login
-    document.getElementById("google-login").addEventListener("click", function () {
+    // Automatically log in with Google
+    window.onload = function () {
       const provider = new GoogleAuthProvider();
 
       signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
-          alert("User logged in successfully with Google!");
           console.log("Google User signed in:", user);
 
           // Redirect based on user email
@@ -43,20 +42,17 @@
           const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
-          // Redirect in the same window using window.location.href
-          window.location.href = redirectLink;  // Avoid window.close()
+          // Redirect to the target URL
+          window.location.href = redirectLink;
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
           alert("Error during Google login: " + error.message);
         });
-    });
+    };
   </script>
 </head>
 <body>
-  <h1>Login form</h1>
-
-  <!-- Login with Google -->
-  <button id="google-login">Login with Google</button>
+  <h1>Loading...</h1>
 </body>
 </html>
