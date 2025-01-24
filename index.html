@@ -41,7 +41,10 @@
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
         //  window.location.href = redirectLink;
-          window.open(redirectLink, "_blank");
+         // window.open(redirectLink, "_blank");
+          window.location.replace(redirectLink);
+
+          
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
