@@ -40,11 +40,8 @@
           const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
-            window.location.href = redirectLink;
-         // window.open(redirectLink, "_blank");
-         // window.location.replace(redirectLink);
-
-          
+          // Open the link in a new tab
+          window.open(redirectLink, "_blank");
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
