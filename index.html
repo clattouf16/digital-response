@@ -8,13 +8,11 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
     import { 
       getAuth, 
-      signInWithRedirect, 
-      getRedirectResult, 
+      signInWithPopup, 
       GoogleAuthProvider, 
       onAuthStateChanged 
     } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAZCQZXewXw9XPU-iq_sKhRvP4BNqi7k4w",
       authDomain: "oms-site-logins.firebaseapp.com",
@@ -24,69 +22,48 @@
       appId: "1:331087943210:web:e3a3b18c99af932f6e1553"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Track if redirect handling is complete
-    let isRedirectHandled = false;
+    // Handle user redirection
+    function redirectUser(user) {
+      const userLinks = {
+        "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
+        "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
+      };
 
+      const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
+      const redirectLink = userLinks[user.email] || defaultRedirect;
+
+      window.location.href = redirectLink;
+    }
+
+    // Main login logic
     async function handleLogin() {
       try {
-        // Handle the redirect result (only once)
-        if (!isRedirectHandled) {
-          isRedirectHandled = true; // Prevent multiple calls
-          const result = await getRedirectResult(auth);
-          if (result) {
-            const user = result.user;
-            console.log("User logged in via redirect:", user);
-
-            // Redirect based on user email
-            const userLinks = {
-              "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
-              "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
-            };
-
-            const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
-            const redirectLink = userLinks[user.email] || defaultRedirect;
-
-            // Redirect user to the target page
-            window.location.href = redirectLink;
-          } else {
-            console.log("No redirect result found. Initiating login...");
-            signInWithRedirect(auth, provider);
-          }
-        }
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log("User signed in:", user);
+        redirectUser(user);
       } catch (error) {
-        console.error("Error during login:", error.message);
+        console.error("Login failed:", error.message);
       }
     }
 
-    // Monitor the user's authentication state
+    // Check for existing auth state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User already signed in:", user);
-
-        // Redirect based on user email
-        const userLinks = {
-          "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/fortesting/home",
-          "christelle.lattouf@gmomail.org": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSHXu1khyl5yt3pZZvE2kFLXtxiBiITFtlp2XCCxkuCqCDSBr7Y10wzLQZiTZOTv-wBW8EQw1SuPPa/pubhtml?gid=2109504780&single=true",
-        };
-
-        const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
-        const redirectLink = userLinks[user.email] || defaultRedirect;
-
-        // Redirect user to the target page
-        window.location.href = redirectLink;
+        redirectUser(user);
       } else {
-        console.log("No user signed in. Checking for redirect...");
-        handleLogin(); // Attempt to handle login
+        console.log("No user signed in. Initiating login...");
+        handleLogin();
       }
     });
   </script>
 </head>
 <body>
-  <h1>Loading...</h1>
+  <h1>Logging you in...</h1>
 </body>
 </html>
