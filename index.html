@@ -6,9 +6,8 @@
   <title>Google Login</title>
   <!-- Import Firebase SDK -->
   <script type="module">
-    // Firebase v9+ Modular Imports
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { getAuth, onAuthStateChanged, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
     // Firebase configuration
     const firebaseConfig = {
@@ -25,10 +24,11 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Handle redirect result after login
+    // Check for redirect result
     getRedirectResult(auth)
       .then((result) => {
         if (result) {
+          // User logged in via redirect
           const user = result.user;
           console.log("Google User signed in:", user);
 
@@ -41,17 +41,25 @@
           const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
-          // Redirect to the target URL
+          // Redirect to the appropriate page
           window.location.href = redirectLink;
-        } else {
-          // If no user is logged in yet, initiate login
-          signInWithRedirect(auth, provider);
         }
       })
       .catch((error) => {
         console.error("Error during Google login:", error.message);
         alert("Error during Google login: " + error.message);
       });
+
+    // Automatically login if user is not already authenticated
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // No user signed in, initiate login
+        console.log("No user signed in. Redirecting to Google login...");
+        signInWithRedirect(auth, provider);
+      } else {
+        console.log("User is already signed in:", user);
+      }
+    });
   </script>
 </head>
 <body>
