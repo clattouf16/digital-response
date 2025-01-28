@@ -6,41 +6,38 @@
   <title>Login</title>
   <style>
     * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-    
-    body {
-  font-family: Arial, sans-serif;
-  background-color: #dad4e6;
-  color: #472682;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /*min-height: 100vh;  Changed from height to min-height */
-   width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden; /* Prevents scrollbars */
-}
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-.container {
-  background: white;
-  border: 2px solid #472682;
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: #dad4e6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      border: 2px solid #472682;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
 
     h1 {
       margin-bottom: 1.5rem;
     }
-    input[type="email"],
-    input[type="password"] {
+
+    input {
       width: 100%;
       padding: 0.75rem;
       margin: 0.5rem 0;
@@ -48,6 +45,7 @@
       border-radius: 4px;
       font-size: 1rem;
     }
+
     button {
       width: 100%;
       padding: 0.75rem;
@@ -59,28 +57,36 @@
       cursor: pointer;
       margin: 1rem 0;
     }
+
     button:hover {
       background-color: #005e85;
     }
+
     .or {
       margin: 1rem 0;
       font-size: 1rem;
       color: black;
     }
+
+    /* Ensuring iframe fills the screen without extra space */
+    iframe {
+      width: 100%;
+      height: 100vh;
+      border: 0;
+      display: block;
+    }
   </style>
 </head>
 <body>
+
   <div class="container">
     <h1>Welcome, Please Login</h1>
-    <!-- Email/Password Form -->
     <input type="email" id="email" placeholder="Enter your email" />
     <input type="password" id="password" placeholder="Enter your password" />
     <button id="email-login">Login</button>
 
-    <!-- Divider for Google Login -->
     <div class="or">OR</div>
 
-    <!-- Google Login Button -->
     <button id="google-login">Login with Google</button>
   </div>
 
@@ -100,20 +106,18 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Email/Password Login
+    // Email Login
     document.getElementById("email-login").addEventListener("click", () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          const user = userCredential.user;
           alert("Logged in successfully with Email!");
-          window.location.href = "https://your-email-redirect-link.com"; // Replace with your redirect link
+          window.location.href = "https://your-email-redirect-link.com"; 
         })
         .catch((error) => {
-          console.error("Error during email login:", error.message);
-          alert("Error during email login: " + error.message);
+          alert("Error: " + error.message);
         });
     });
 
@@ -124,24 +128,22 @@
       signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
-          alert("Logged in successfully with Google!");
 
           const userLinks = {
             "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
             "tracydahdouh@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/hello-tracy",
-             "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
+            "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
           };
 
           const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
-          const redirectLink = userLinks[user.email] || defaultRedirect;
-
-          window.location.href = redirectLink;
+          window.location.href = userLinks[user.email] || defaultRedirect;
         })
         .catch((error) => {
-          console.error("Error during Google login:", error.message);
-          alert("Error during Google login: " + error.message);
+          alert("Error: " + error.message);
         });
     });
   </script>
+
 </body>
 </html>
+
