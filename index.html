@@ -6,95 +6,79 @@
   <title>Login</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
+  font-family: Arial, sans-serif;
+  background-color: #dad4e6;
+  color: #472682;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Changed from height to min-height */
+  margin: 0;
+  overflow: hidden; /* Prevents scrollbars */
+}
 
-    .login-container {
-      text-align: center;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      width: 90%;
-    }
+.container {
+  background: white;
+  border: 2px solid #472682;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
 
-    .login-container h1 {
-      color: #472682; /* Dark purple */
-      margin-bottom: 20px;
+    h1 {
+      margin-bottom: 1.5rem;
     }
-
-    .input-field {
-      margin-bottom: 15px;
+    input[type="email"],
+    input[type="password"] {
       width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #472682;
+      border-radius: 4px;
+      font-size: 1rem;
     }
-
-    .input-field input {
-      width: calc(100% - 20px);
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #008cc1; /* Blue border */
-      border-radius: 5px;
-    }
-
-    .login-button, .google-login-button {
-      display: block;
+    button {
       width: 100%;
-      padding: 10px 15px;
-      font-size: 16px;
-      margin-top: 10px;
+      padding: 0.75rem;
+      background-color: #008cc1;
       color: white;
+      font-size: 1.1rem;
       border: none;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
+      margin: 1rem 0;
     }
-
-    .login-button {
-      background-color: #472682; /* Dark purple */
+    button:hover {
+      background-color: #005e85;
     }
-
-    .google-login-button {
-      background-color: #008cc1; /* Blue */
-    }
-
-    .google-login-button:hover, .login-button:hover {
-      opacity: 0.9;
-    }
-
-    .or-text {
-      margin: 15px 0;
-      color: #472682; /* Dark purple */
-      font-weight: bold;
+    .or {
+      margin: 1rem 0;
+      font-size: 1rem;
+      color: black;
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h1>Welcome! Login to Continue</h1>
-    <!-- Email/Password Login -->
-    <div class="input-field">
-      <input type="email" id="email" placeholder="Email" required>
-    </div>
-    <div class="input-field">
-      <input type="password" id="password" placeholder="Password" required>
-    </div>
-    <button class="login-button" id="email-login">Login</button>
+  <div class="container">
+    <h1>Welcome, Please Login</h1>
+    <!-- Email/Password Form -->
+    <input type="email" id="email" placeholder="Enter your email" />
+    <input type="password" id="password" placeholder="Enter your password" />
+    <button id="email-login">Login</button>
 
-    <!-- OR Divider -->
-    <div class="or-text">OR</div>
+    <!-- Divider for Google Login -->
+    <div class="or">OR</div>
 
-    <!-- Google Login -->
-    <button class="google-login-button" id="google-login">Login with Google</button>
+    <!-- Google Login Button -->
+    <button id="google-login">Login with Google</button>
   </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZCQZXewXw9XPU-iq_sKhRvP4BNqi7k4w",
@@ -109,47 +93,45 @@
     const auth = getAuth(app);
 
     // Email/Password Login
-    document.getElementById('email-login').addEventListener('click', () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    document.getElementById("email-login").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
       signInWithEmailAndPassword(auth, email, password)
-        .then((result) => {
-          alert('Logged in successfully!');
-          const redirectLink = "https://sites.google.com/new-heights.me/nh-drm/home";
-          window.open(redirectLink, "_blank"); // Opens in a new tab
+        .then((userCredential) => {
+          const user = userCredential.user;
+          alert("Logged in successfully with Email!");
+          window.location.href = "https://your-email-redirect-link.com"; // Replace with your redirect link
         })
         .catch((error) => {
-          console.error("Error with email/password login:", error.message);
-          alert("Login failed: " + error.message);
+          console.error("Error during email login:", error.message);
+          alert("Error during email login: " + error.message);
         });
     });
 
     // Google Login
-    document.getElementById('google-login').addEventListener('click', () => {
+    document.getElementById("google-login").addEventListener("click", () => {
       const provider = new GoogleAuthProvider();
 
       signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
           alert("Logged in successfully with Google!");
-          console.log("Google User signed in:", user);
 
           const userLinks = {
             "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
             "tracydahdouh@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/hello-tracy",
-            "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
-
+             "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
           };
 
-          const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home";
+          const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
           const redirectLink = userLinks[user.email] || defaultRedirect;
 
-          window.open(redirectLink, "_blank"); // Opens in a new tab
+          window.location.href = redirectLink;
         })
         .catch((error) => {
-          console.error("Error with Google login:", error.message);
-          alert("Login failed: " + error.message);
+          console.error("Error during Google login:", error.message);
+          alert("Error during Google login: " + error.message);
         });
     });
   </script>
