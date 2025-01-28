@@ -28,13 +28,14 @@
       "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
       "tracydahdouh@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/hello-tracy",
        "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
+      
     };
     const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
 
     // Function to redirect the user after login
     const redirectUser = (email) => {
       const redirectLink = userLinks[email] || defaultRedirect;
-      window.location.href = redirectLink;
+      window.open(redirectLink, "_blank"); // Open in a new tab
     };
 
     // Handle Google Login
