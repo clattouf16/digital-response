@@ -4,6 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Login</title>
+   <style>
+    /* Body styles to center content */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Full height of the viewport */
+      margin: 0; /* Remove default margins */
+      background-color: #f4f4f4;
+    }
+
+    /* Container that limits size to the form */
+    .form-container {
+      width: 100%;
+      max-width: 500px; /* Maximum width for the form */
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Styling for the form */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
   <!-- Import Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
@@ -93,7 +139,7 @@
   <button id="google-login">Login with Google</button>
 
   <!-- Email/Password Login -->
-  <div>
+  <div class="form-container">
     <input type="email" id="email" placeholder="Enter your email">
     <input type="password" id="password" placeholder="Enter your password">
     <button id="email-login">Login</button>
