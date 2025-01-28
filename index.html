@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Authentication and Redirect</title>
+  <title>Google Login</title>
+  <!-- Import Firebase SDK -->
   <script type="module">
-    // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    // Firebase configuration
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAZCQZXewXw9XPU-iq_sKhRvP4BNqi7k4w",
       authDomain: "oms-site-logins.firebaseapp.com",
@@ -23,66 +23,79 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Redirect URLs
+    // Define user redirection links
     const userLinks = {
       "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
       "tracydahdouh@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/hello-tracy",
-      "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass"
+       "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
     };
     const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
 
-    // Function to handle Google Login
-    function loginWithGoogle() {
+    // Function to redirect the user after login
+    const redirectUser = (email) => {
+      const redirectLink = userLinks[email] || defaultRedirect;
+      window.location.href = redirectLink;
+    };
+
+    // Handle Google Login
+    const googleLogin = () => {
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
-          const redirectLink = userLinks[user.email] || defaultRedirect;
-          window.location.href = redirectLink; // Redirect after successful login
+          console.log("Google User signed in:", user);
+          redirectUser(user.email);
         })
         .catch((error) => {
-          console.error("Google login error:", error.message);
+          console.error("Error during Google login:", error.message);
           alert("Error during Google login: " + error.message);
         });
-    }
+    };
 
-    // Function to handle Email/Password Login
-    function loginWithEmail(event) {
-      event.preventDefault(); // Prevent form submission
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
+    // Handle Email/Password Login
+    const emailPasswordLogin = (email, password) => {
       signInWithEmailAndPassword(auth, email, password)
         .then((result) => {
           const user = result.user;
-          const redirectLink = userLinks[user.email] || defaultRedirect;
-          window.location.href = redirectLink; // Redirect after successful login
+          console.log("Email/Password User signed in:", user);
+          redirectUser(user.email);
         })
         .catch((error) => {
-          console.error("Email login error:", error.message);
+          console.error("Error during Email/Password login:", error.message);
           alert("Error during Email/Password login: " + error.message);
         });
-    }
+    };
 
-    // Automatically trigger Google Login on page load
+    // Add event listeners after DOM loads
     window.onload = () => {
-      loginWithGoogle(); // Auto-login with Google
+      const googleLoginButton = document.getElementById("google-login");
+      const emailLoginButton = document.getElementById("email-login");
+
+      // Google Login Button
+      googleLoginButton.addEventListener("click", () => {
+        googleLogin();
+      });
+
+      // Email/Password Login Button
+      emailLoginButton.addEventListener("click", () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        emailPasswordLogin(email, password);
+      });
     };
   </script>
 </head>
 <body>
   <h1>Login</h1>
 
-  <!-- Email/Password Login Form -->
-  <form id="email-login-form" onsubmit="loginWithEmail(event)">
-    <label for="email">Email:</label>
-    <input type="email" id="email" placeholder="Enter your email" required>
-    <label for="password">Password:</label>
-    <input type="password" id="password" placeholder="Enter your password" required>
-    <button type="submit">Login</button>
-  </form>
+  <!-- Google Login -->
+  <button id="google-login">Login with Google</button>
 
-  <!-- Optionally, Google Login button (for fallback) -->
-  <button onclick="loginWithGoogle()">Login with Google</button>
+  <!-- Email/Password Login -->
+  <div>
+    <input type="email" id="email" placeholder="Enter your email">
+    <input type="password" id="password" placeholder="Enter your password">
+    <button id="email-login">Login</button>
+  </div>
 </body>
 </html>
