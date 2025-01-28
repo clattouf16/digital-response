@@ -3,13 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Login</title>
-  <!-- Import Firebase SDK -->
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #dad4e6;
+      color: #472682;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      border: 2px solid #472682;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #472682;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #008cc1;
+      color: white;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 1rem 0;
+    }
+    button:hover {
+      background-color: #005e85;
+    }
+    .or {
+      margin: 1rem 0;
+      font-size: 1rem;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome, Please Login</h1>
+    <!-- Email/Password Form -->
+    <input type="email" id="email" placeholder="Enter your email" />
+    <input type="password" id="password" placeholder="Enter your password" />
+    <button id="email-login">Login</button>
+
+    <!-- Divider for Google Login -->
+    <div class="or">OR</div>
+
+    <!-- Google Login Button -->
+    <button id="google-login">Login with Google</button>
+  </div>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAZCQZXewXw9XPU-iq_sKhRvP4BNqi7k4w",
       authDomain: "oms-site-logins.firebaseapp.com",
@@ -19,84 +86,51 @@
       appId: "1:331087943210:web:e3a3b18c99af932f6e1553"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Define user redirection links
-    const userLinks = {
-      "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
-      "tracydahdouh@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/hello-tracy",
-       "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
-      
-    };
-    const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
+    // Email/Password Login
+    document.getElementById("email-login").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-    // Function to redirect the user after login
-    const redirectUser = (email) => {
-      const redirectLink = userLinks[email] || defaultRedirect;
-      window.open(redirectLink, "_blank"); // Open in a new tab
-    };
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          alert("Logged in successfully with Email!");
+          window.location.href = "https://your-email-redirect-link.com"; // Replace with your redirect link
+        })
+        .catch((error) => {
+          console.error("Error during email login:", error.message);
+          alert("Error during email login: " + error.message);
+        });
+    });
 
-    // Handle Google Login
-    const googleLogin = () => {
+    // Google Login
+    document.getElementById("google-login").addEventListener("click", () => {
       const provider = new GoogleAuthProvider();
+
       signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
-          console.log("Google User signed in:", user);
-          redirectUser(user.email);
+          alert("Logged in successfully with Google!");
+
+          const userLinks = {
+            "christellelattouf@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/rania-details",
+            "tracydahdouh@new-heights.me": "https://sites.google.com/new-heights.me/nh-drm/hello-tracy",
+             "christellelattouf@gmail.com": "https://sites.google.com/new-heights.me/nh-drm/testing-email-pass",
+          };
+
+          const defaultRedirect = "https://sites.google.com/new-heights.me/nh-drm/home?authuser=0";
+          const redirectLink = userLinks[user.email] || defaultRedirect;
+
+          window.location.href = redirectLink;
         })
         .catch((error) => {
           console.error("Error during Google login:", error.message);
           alert("Error during Google login: " + error.message);
         });
-    };
-
-    // Handle Email/Password Login
-    const emailPasswordLogin = (email, password) => {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((result) => {
-          const user = result.user;
-          console.log("Email/Password User signed in:", user);
-          redirectUser(user.email);
-        })
-        .catch((error) => {
-          console.error("Error during Email/Password login:", error.message);
-          alert("Error during Email/Password login: " + error.message);
-        });
-    };
-
-    // Add event listeners after DOM loads
-    window.onload = () => {
-      const googleLoginButton = document.getElementById("google-login");
-      const emailLoginButton = document.getElementById("email-login");
-
-      // Google Login Button
-      googleLoginButton.addEventListener("click", () => {
-        googleLogin();
-      });
-
-      // Email/Password Login Button
-      emailLoginButton.addEventListener("click", () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        emailPasswordLogin(email, password);
-      });
-    };
+    });
   </script>
-</head>
-<body>
-  <h1>Login</h1>
-
-  <!-- Google Login -->
-  <button id="google-login">Login with Google</button>
-
-  <!-- Email/Password Login -->
-  <div>
-    <input type="email" id="email" placeholder="Enter your email">
-    <input type="password" id="password" placeholder="Enter your password">
-    <button id="email-login">Login</button>
-  </div>
 </body>
 </html>
